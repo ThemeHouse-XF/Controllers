@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_Controllers" title="[⌂] Controllers" version_string="1.0.0" version_id="1447261019" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation>
+    <navigation navigation_id="adminControllers" parent_navigation_id="navigation" display_order="110" link="admin-controllers" admin_permission_id="dev" debug_only="0" hide_no_children="0"/>
+    <navigation navigation_id="publicControllers" parent_navigation_id="navigation" display_order="100" link="public-controllers" admin_permission_id="dev" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="th_controller_admin_add_controllers"><![CDATA[<xen:title>{xen:phrase th_create_new_admin_controller_controllers}</xen:title>
+	
+<xen:form action="{xen:adminlink 'admin-controllers/save'}" class="AutoValidator" data-redirect="yes">
+
+	<xen:textboxunit name="class" label="{xen:phrase th_admin_controller_class_controllers}:" value="{$class}" />
+	<xen:textboxunit name="route_prefix" label="{xen:phrase th_route_prefix_controllers}:" value="{$routePrefix}" />
+	
+	<fieldset>
+		<xen:textboxunit name="model" label="{xen:phrase th_model_class_controllers}:" value="{$model}" />
+		<xen:textboxunit name="method" label="{xen:phrase th_get_all_method_controllers}:" value="{$method}" />
+	</fieldset>
+
+	<xen:selectunit name="title_field" label="{xen:phrase th_title_field_controllers}:" value="{$titleField}">
+		<xen:foreach loop="$fields" key="$table" value="$tableFields">
+			<xen:optgroup label="{$table}">
+				<xen:foreach loop="$tableFields" key="$fieldName" value="$field">
+					<xen:option label="{$fieldName}" value="{$fieldName}" />
+				</xen:foreach>
+			</xen:optgroup>
+		</xen:foreach>
+	</xen:selectunit>
+	
+	<xen:selectunit name="subtitle_field" label="{xen:phrase th_subtitle_field_controllers}:" value="{$subtitleField}">
+		<xen:foreach loop="$fields" key="$table" value="$tableFields">
+			<xen:option label="({xen:phrase none})" />
+			<xen:optgroup label="{$table}">
+				<xen:foreach loop="$tableFields" key="$fieldName" value="$field">
+					<xen:option label="{$fieldName}" value="{$fieldName}" />
+				</xen:foreach>
+			</xen:optgroup>
+		</xen:foreach>
+	</xen:selectunit>
+	
+	<div id="fields">
+		<xen:checkboxunit name="fields" label="{xen:phrase th_fields_controllers}:" listclass="checkboxColumns">
+			<xen:hint><br /><label><input type="checkbox" class="CheckAll" data-target="#fields" /> {xen:phrase select_all}</label></xen:hint>
+			<xen:foreach loop="$fields" key="$table" value="$tableFields">
+				<xen:optgroup label="{$table}">
+					<xen:foreach loop="$tableFields" key="$fieldName" value="$field">
+						<xen:option name="fields[{$table}][{$fieldName}]" label="{$fieldName}" selected="{$selectedFields.{$table}.{$fieldName}}" />
+					</xen:foreach>
+				</xen:optgroup>
+			</xen:foreach>
+		</xen:checkboxunit>
+	</div>
+	
+	<fieldset id="actions">
+		<xen:checkboxunit name="actions" label="{xen:phrase th_actions_controllers}:" listclass="checkboxColumns">
+			<xen:hint><br /><label><input type="checkbox" class="CheckAll" data-target="#actions" /> {xen:phrase select_all}</label></xen:hint>
+			<xen:option value="index" label="{xen:phrase th_list_controller}" selected="true" />
+			<xen:option value="add" label="{xen:phrase th_add_controller}" selected="true" />
+			<xen:option value="edit" label="{xen:phrase th_edit_controller}" selected="true" />
+			<xen:option value="delete" label="{xen:phrase th_delete_controller}" selected="true" />
+		</xen:checkboxunit>
+	</fieldset>
+
+	<input type="hidden" name="datawriter" value="{$dataWriter}" />
+	<input type="hidden" name="addon_id" value="{$addOnSelected}" />
+
+	<xen:submitunit>
+		<input type="submit"  value="{xen:phrase th_create_admin_controller_controllers}" accesskey="s" class="button primary"  />
+	</xen:submitunit>
+</xen:form>]]></template>
+    <template title="th_controller_admin_choose_dw_controllers"><![CDATA[<xen:title>{xen:phrase th_create_new_admin_controller_controllers}</xen:title>
+	
+<xen:form action="{xen:adminlink 'admin-controllers/add'}">
+
+	<xen:selectunit name="datawriter" label="{xen:phrase th_data_writer_controllers}:">
+		<xen:options source="{$dataWriters}" />
+	</xen:selectunit>
+
+	<input type="hidden" name="addon_id" value="{$addOnSelected}" />
+
+	<xen:submitunit>
+		<input type="submit"  value="{xen:phrase continue}..." accesskey="s" class="button primary"  />
+	</xen:submitunit>
+</xen:form>]]></template>
+    <template title="th_controller_admin_list_controllers"><![CDATA[<xen:title>{xen:phrase th_admin_controllers_controllers}</xen:title>
+
+<xen:topctrl>
+	<a href="{xen:if {$xenOptions.th_controllers_enableAddOnChooser}, {xen:adminlink 'add-ons/admin-controllers/add', {$addOns.{$addOnSelected}}}, {xen:adminlink 'admin-controllers/add'}}" class="button">+ {xen:phrase th_create_new_admin_controller_controllers}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+
+<xen:if is="{$xenOptions.th_controllers_enableAddOnChooser}">
+	<div class="topChoosers">
+		<div class="Popup">
+			<span class="muted">{xen:phrase add_on}:</span> <a rel="Menu">{xen:if $addOnSelected, {$addOns.{$addOnSelected}.title}, '({xen:phrase unspecified})'}</a>
+			<div class="Menu">
+				<div class="primaryContent menuHeader"><h3>{xen:phrase add_on}</h3></div>
+				<ul class="secondaryContent blockLinksList">
+					<li><a href="{xen:adminlink 'add-ons/admin-controllers'}">({xen:phrase unspecified})</a></li>
+					<xen:foreach loop="$addOns" value="$addOn">
+						<li><a href="{xen:adminlink 'add-ons/admin-controllers', $addOn}">{$addOn.title}</a></li>
+					</xen:foreach>
+				</ul>
+			</div>
+		</div>
+	</div>
+</xen:if>
+
+<h2 class="subHeading">
+	<xen:include template="filter_list_controls" />
+	{xen:phrase th_admin_controllers_controllers}
+</h2>
+
+<ul class="FilterList">
+	<xen:foreach loop="$addOns" value="$addOn">
+		<xen:if is="{$controllerAdmins.{$addOn.addon_id}}">
+			<li>
+				<h3 class="textHeading{xen:if '!{$addOn.active}', ' disabled'}">{$addOn.title}</h3>
+				<ol>
+				<xen:foreach loop="$controllerAdmins.{$addOn.addon_id}" value="$controllerAdmin">
+					<xen:listitem
+						id="{$controllerAdmin.class}"
+						href="{xen:adminlink 'admin-controllers/view', $controllerAdmin}"
+						label="{$controllerAdmin.filename}"
+						labelclass="{xen:if '!{$addOn.active}', ' parentDisabled'}"
+						snippet="{$controllerAdmin.class}"
+						delete="{xen:adminlink 'admin-controllers/delete', $controllerAdmin}" />
+				</xen:foreach>
+				</ol>
+			</li>
+		</xen:if>
+	</xen:foreach>
+</ul>
+
+<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:number $controllerAdminCount}</span>', 'total={xen:number $totalControllerAdmins}'}</p>]]></template>
+    <template title="th_controller_admin_view_controllers"><![CDATA[<xen:title>{$controllerAdmin.class}</xen:title>
+
+<xen:topctrl>
+	<a href="{xen:adminlink 'admin-controllers/add-action', $controllerAdmin}" class="button">+ {xen:phrase th_add_action_controllers}</a>
+	<a href="{xen:adminlink 'admin-controllers/add-method', $controllerAdmin}" class="button">+ {xen:phrase th_add_method_controllers}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+
+<h2 class="subHeading">
+	{xen:phrase th_methods_controllers}
+</h2>
+
+<ul class="FilterList Scrollable">
+	<li>
+		<ol>
+			<xen:foreach loop="$methods" key="$methodName" value="$method">
+				<xen:listitem
+					id="{$methodName}"
+					href="{xen:adminlink 'admin-controllers/edit-method', $controllerAdmin, 'method={$methodName}'}"
+					label="{$methodName}"
+					snippet="{$method.declaringClass}"
+					delete="{xen:adminlink 'admin-controllers/delete-method', $controllerAdmin, 'method={$methodName}'}" />
+			</xen:foreach>
+		</ol>
+	</li>
+</ul>
+
+<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $methods}</span>', 'total={xen:count $methods}'}</p>]]></template>
+    <template title="th_controller_public_list_controllers"><![CDATA[<xen:title>{xen:phrase th_public_controllers_controllers}</xen:title>
+
+<xen:topctrl>
+	<a href="{xen:if {$xenOptions.th_controllers_enableAddOnChooser}, {xen:adminlink 'add-ons/public-controllers/add', {$addOns.{$addOnSelected}}}, {xen:adminlink 'public-controllers/add'}}" class="button">+ {xen:phrase th_create_new_public_controller_controllers}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+
+<xen:if is="{$xenOptions.th_controllers_enableAddOnChooser}">
+	<div class="topChoosers">
+		<div class="Popup">
+			<span class="muted">{xen:phrase add_on}:</span> <a rel="Menu">{xen:if $addOnSelected, {$addOns.{$addOnSelected}.title}, '({xen:phrase unspecified})'}</a>
+			<div class="Menu">
+				<div class="primaryContent menuHeader"><h3>{xen:phrase add_on}</h3></div>
+				<ul class="secondaryContent blockLinksList">
+					<li><a href="{xen:adminlink 'add-ons/public-controllers'}">({xen:phrase unspecified})</a></li>
+					<xen:foreach loop="$addOns" value="$addOn">
+						<li><a href="{xen:adminlink 'add-ons/public-controllers', $addOn}">{$addOn.title}</a></li>
+					</xen:foreach>
+				</ul>
+			</div>
+		</div>
+	</div>
+</xen:if>
+
+<h2 class="subHeading">
+	<xen:include template="filter_list_controls" />
+	{xen:phrase th_public_controllers_controllers}
+</h2>
+
+<ul class="FilterList">
+	<xen:foreach loop="$addOns" value="$addOn">
+		<xen:if is="{$controllerPublics.{$addOn.addon_id}}">
+			<li>
+				<h3 class="textHeading{xen:if '!{$addOn.active}', ' disabled'}">{$addOn.title}</h3>
+				<ol>
+				<xen:foreach loop="$controllerPublics.{$addOn.addon_id}" value="$controllerPublic">
+					<xen:listitem
+						id="{$controllerPublic.class}"
+						href="{xen:adminlink 'public-controllers/view', $controllerPublic}"
+						label="{$controllerPublic.filename}"
+						labelclass="{xen:if '!{$addOn.active}', ' parentDisabled'}"
+						snippet="{$controllerPublic.class}"
+						delete="{xen:adminlink 'public-controllers/delete', $controllerPublic}" />
+				</xen:foreach>
+				</ol>
+			</li>
+		</xen:if>
+	</xen:foreach>
+</ul>
+
+<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:number $controllerPublicCount}</span>', 'total={xen:number $totalControllerPublics}'}</p>]]></template>
+  </admin_templates>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="controller_pre_dispatch" execute_order="10" callback_class="ThemeHouse_Listener_ControllerPreDispatch" callback_method="controllerPreDispatch" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="ThemeHouse_Controllers_Listener_FileHealthCheck" callback_method="fileHealthCheck" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="ThemeHouse_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_Controllers_Listener_LoadClass" callback_method="loadClassRoutePrefix" active="0" hint="XenForo_Route_PrefixAdmin_AddOns" description="XenForo_Route_PrefixAdmin_AddOns (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_Controllers_Listener_LoadClass" callback_method="loadClassDataWriter" active="0" hint="XenForo_DataWriter_RoutePrefix" description="XenForo_DataWriter_RoutePrefix (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="ThemeHouse_Controllers_Listener_LoadClass" callback_method="loadClassDataWriter" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_route_prefix" execute_order="10" callback_class="ThemeHouse_Controllers_Listener_LoadClass" callback_method="loadClassRoutePrefix" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <group group_id="th_controllers" display_order="2000" debug_only="0"/>
+    <option option_id="th_controllers_enableAddOnChooser" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params/>
+      <sub_options/>
+      <relation group_id="th_controllers" display_order="1"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="admin_navigation_adminControllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Admin Controllers]]></phrase>
+    <phrase title="admin_navigation_publicControllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Public Controllers]]></phrase>
+    <phrase title="option_group_th_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[[⌂] Controllers]]></phrase>
+    <phrase title="option_group_th_controllers_description" version_id="1422270123" version_string="1.0.0"><![CDATA[Options for the [⌂] Controllers add-on.]]></phrase>
+    <phrase title="option_th_controllers_enableAddOnChooser" version_id="1422270123" version_string="1.0.0"><![CDATA[Enable Add-on Chooser]]></phrase>
+    <phrase title="option_th_controllers_enableAddOnChooser_explain" version_id="1422270123" version_string="1.0.0"><![CDATA[]]></phrase>
+    <phrase title="th_actions_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Actions]]></phrase>
+    <phrase title="th_add_action_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Add Action]]></phrase>
+    <phrase title="th_add_controller" version_id="1422270123" version_string="1.0.0"><![CDATA[Add]]></phrase>
+    <phrase title="th_add_method_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Add Method]]></phrase>
+    <phrase title="th_admin_controllers_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Admin Controllers]]></phrase>
+    <phrase title="th_admin_controller_class_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Admin Controller Class]]></phrase>
+    <phrase title="th_create_admin_controller_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Create Admin Controller]]></phrase>
+    <phrase title="th_create_new_admin_controller_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Create New Admin Controller]]></phrase>
+    <phrase title="th_create_new_public_controller_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Create New Public Controller]]></phrase>
+    <phrase title="th_create_public_controller_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Create Public Controller]]></phrase>
+    <phrase title="th_data_writer_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Data Writer]]></phrase>
+    <phrase title="th_delete_controller" version_id="1422270123" version_string="1.0.0"><![CDATA[Delete]]></phrase>
+    <phrase title="th_edit_controller" version_id="1422270123" version_string="1.0.0"><![CDATA[Edit]]></phrase>
+    <phrase title="th_fields_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Fields]]></phrase>
+    <phrase title="th_get_all_method_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[GetAll Method]]></phrase>
+    <phrase title="th_list_controller" version_id="1422270123" version_string="1.0.0"><![CDATA[List]]></phrase>
+    <phrase title="th_methods_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Methods]]></phrase>
+    <phrase title="th_model_class_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Model Class]]></phrase>
+    <phrase title="th_no_datawriters_in_this_addon_controller" version_id="1422270123" version_string="1.0.0"><![CDATA[There are no data writers in this add-on.]]></phrase>
+    <phrase title="th_public_controllers_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Public Controllers]]></phrase>
+    <phrase title="th_route_prefix_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Route Prefix]]></phrase>
+    <phrase title="th_save_controller" version_id="1422270123" version_string="1.0.0"><![CDATA[Save]]></phrase>
+    <phrase title="th_subtitle_field_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Subtitle Field]]></phrase>
+    <phrase title="th_title_field_controllers" version_id="1422270123" version_string="1.0.0"><![CDATA[Title Field]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="admin-controllers" class="ThemeHouse_Controllers_Route_PrefixAdmin_AdminControllers" build_link="data_only"/>
+      <prefix original_prefix="public-controllers" class="ThemeHouse_Controllers_Route_PrefixAdmin_PublicControllers" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_controllers" description="Copyright notice for [⌂] Controllers" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
